@@ -218,28 +218,6 @@ car-dashboard-project
 * Streamlit 담당자가 분석 페이지 구현
 * PM 담당자가 프로젝트 통합, 문서화 및 발표 준비 수행
 
-
-#### Streamlit
-
-* 브랜드별 페이지
-* 차종별 페이지
-
----
-
-### E
-
-#### Streamlit
-
-* 메인 페이지
-* 성별 페이지
-* FAQ 페이지
-
-#### PM
-
-* GitHub 관리
-* README 작성
-* 발표 자료 제작
-
 ---
 
 ## 📅 프로젝트 일정
