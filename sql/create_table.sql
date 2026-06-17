@@ -61,3 +61,14 @@ SELECT a.age_group,
 FROM age_registration a
 JOIN brand b
 ON a.brand_id = b.brand_id;
+
+-- 6. 크롤링 기반 FAQ 캐싱 테이블 (기존 파일 맨 밑에 이어서 추가)
+CREATE TABLE FAQ (
+    faq_id INT NOT NULL AUTO_INCREMENT,
+    keyword VARCHAR(50) NOT NULL,           -- 사용자가 검색한 키워드 (예: 환불, 배송)
+    question TEXT NOT NULL,                 -- 크롤링으로 긁어온 질문 내용
+    answer TEXT NOT NULL,                   -- 크롤링으로 긁어온 답변 내용
+    source_url VARCHAR(255) NULL,           -- 센스 추가: 출처를 남기기 위한 크롤링 원본 주소 URL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 긁어온 시간
+    PRIMARY KEY (faq_id)
+);
