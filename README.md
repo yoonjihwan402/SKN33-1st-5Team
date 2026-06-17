@@ -1,3 +1,15 @@
+# [개인]
+*** 절대 main, dev 브랜치에 개발 금지***
+
+1.  원격 main 또는 dev pull
+2. 기능 구현용 로컬 브랜치 생성
+3. 작업 완료시 같은 이름의 원격 브랜치로 push 
+ex) feature/faq -> origin/feature/faq
+4. 원격 브랜치 내용을 원격 dev에 PR
+5. dev 브랜치에서 PR 확인 후 Merge
+6. 원격 dev 내용을  local dev로 pull
+7. 테스트 수행 후 문제가 없다면 해당 커밋까지를 원격/로컬 main에 병합
+
 # 🚗 TESLA, HYUNDAI, KIA 통계 분석 대시보드
 
 ## 📌 프로젝트 소개
