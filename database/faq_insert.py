@@ -8,7 +8,7 @@ import mysql.connector
 BASE_DIR = Path(__file__).resolve().parent
 
 # 📂 FAQ CSV 파일 경로 (상황에 맞게 파일명을 수정하세요!)
-FAQ_CSV = BASE_DIR / "../data/processed/all_faq_clean.csv"
+FAQ_CSV = BASE_DIR / "/data/processed/all_faq_clean.csv"
 
 # MySQL 연결 설정 (기존에 쓰시던 접속 정보로 변경 필수!)
 DB_CONFIG = {
