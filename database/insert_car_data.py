@@ -4,10 +4,11 @@ import os
 
 import mysql.connector
 
-
 BASE_DIR = Path(__file__).resolve().parent
 
+# CSV 파일 경로 설정 (이름 변경 확인 완료)
 DANAWA_MODEL_CSV = BASE_DIR / "../data/processed/danawa_model_clean.csv"
+DANAWA_BRAND_CSV = BASE_DIR / "../data/processed/danawa_brand_clean.csv"
 NICE_AGE_CSV = BASE_DIR / "../data/processed/nice_age_clean.csv"
 NICE_GENDER_CSV = BASE_DIR / "../data/processed/nice_gender_clean.csv"
 
@@ -26,11 +27,11 @@ ROMAN_NUMBER_REPLACEMENTS = (
 )
 
 DB_CONFIG = {
-    "host": os.getenv("MYSQL_HOST", "localhost"),
-    "port": int(os.getenv("MYSQL_PORT", "3306")),
-    "user": os.getenv("MYSQL_USER", "skn_ai"),
-    "password": os.getenv("MYSQL_PASSWORD", "1234"),
-    "database": os.getenv("MYSQL_DATABASE", "cardb"),
+    "host": "localhost",
+    "port": 3306,
+    "user": "skn_ai",
+    "password": "1234",
+    "database": "cardb",
     "charset": "utf8mb4",
     "use_unicode": True,
 }
@@ -57,13 +58,6 @@ def to_int(value):
 def normalize_model_name(brand_name, model_name):
     """
     파일마다 모델명 표기가 다르므로 비교 전에 Car_Model 기준으로 통일합니다.
-
-    예)
-    nice_age_clean.csv / nice_gender_clean.csv: 모델 3
-    danawa_model_clean.csv / Car_Model: Model 3
-
-    nice_age_clean.csv: 포터II, 더 뉴봉고Ⅲ화물
-    danawa_model_clean.csv / Car_Model: 포터2, 봉고 3
     """
     model_name = (model_name or "").strip()
 
@@ -97,8 +91,6 @@ def get_unique_brand_names_from_nice_age():
 def insert_brands(cursor):
     """
     nice_age_clean.csv의 브랜드명을 Brand 테이블에 넣습니다.
-
-    단, 기아/현대/테슬라는 지정된 brand_id를 반드시 사용합니다.
     """
     cursor.execute("SELECT brand_id, TRIM(brand_name) FROM Brand")
     rows = cursor.fetchall()
@@ -187,10 +179,6 @@ def load_existing_car_models(cursor):
 def insert_car_models(cursor, brand_id_by_name):
     """
     danawa_model_clean.csv에서 브랜드/모델만 추출해 Car_Model에 넣습니다.
-
-    - Brand에 없는 브랜드는 제외합니다.
-    - 같은 모델명은 한 번만 넣습니다.
-    - model_id는 테이블의 현재 MAX(model_id) 다음 번호부터 직접 부여합니다.
     """
     rows = read_csv_rows(DANAWA_MODEL_CSV)
     model_id_by_key, model_names = load_existing_car_models(cursor)
@@ -237,20 +225,18 @@ def insert_car_models(cursor, brand_id_by_name):
     return model_id_by_key
 
 
-def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
+def insert_monthly_model_registrations(cursor, model_id_by_key, brand_id_by_name):
     """
-    danawa_model_clean.csv의 월별 판매량을 Monthly_Registration에 넣습니다.
-
-    CSV의 '순위'는 Monthly_Registration 테이블에 대응 컬럼이 없으므로 저장하지 않습니다.
+    [수정] 변경된 테이블 Monthly_Model_Registration에 맞추어 데이터를 적재합니다.
+    새로 추가된 brand_name 데이터도 함께 저장합니다.
     """
     rows = read_csv_rows(DANAWA_MODEL_CSV)
-    next_reg_id = get_next_id(cursor, "Monthly_Registration", "reg_id")
+    next_reg_id = get_next_id(cursor, "Monthly_Model_Registration", "reg_id")
 
-    # 💡 1. 중복 데이터 체크용 SELECT문에 brand_name 추가
     cursor.execute(
         """
-        SELECT model_id, year, month, monthly_reg_count, brand_name
-        FROM Monthly_Registration
+        SELECT model_id, brand_name, year, month, monthly_reg_count
+        FROM Monthly_Model_Registration
         """
     )
     existing_rows = set(cursor.fetchall())
@@ -260,7 +246,7 @@ def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
     skipped_existing = 0
 
     for row in rows:
-        brand_name = row["브랜드"]  # 💡 CSV에서 '브랜드명'(예: 기아, 현대)을 추출합니다.
+        brand_name = row["브랜드"]
         brand_id = brand_id_by_name.get(brand_name)
 
         if brand_id is None:
@@ -278,17 +264,16 @@ def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
         month = to_int(row["월"])
         monthly_reg_count = to_int(row["판매량"])
 
-        # 💡 2. 중복 체크 세트(existing_rows)와 형식을 맞추기 위해 brand_name 추가
-        natural_row = (model_id, year, month, monthly_reg_count, brand_name)
+        # 💡 새로 정의된 스키마에 맞춰 튜플 구성
+        natural_row = (model_id, brand_name, year, month, monthly_reg_count)
 
         if natural_row in existing_rows:
             skipped_existing += 1
             continue
 
-        # 💡 3. ★핵심★ INSERT문에 brand_name 컬럼과 파라미터(%s)를 추가로 매핑합니다.
         cursor.execute(
             """
-            INSERT INTO Monthly_Registration
+            INSERT INTO Monthly_Model_Registration
                 (reg_id, model_id, brand_name, year, month, monthly_reg_count)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
@@ -300,18 +285,75 @@ def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
         inserted += 1
 
     print(
-        "[Monthly_Registration]",
+        "[Monthly_Model_Registration]",
         f"inserted={inserted}",
         f"skipped_existing={skipped_existing}",
         f"skipped_no_model={skipped_no_model}",
     )
 
 
+def insert_monthly_brand_registrations(cursor):
+    """
+    [신규] danawa_brand_clean.csv를 읽어 Monthly_Brand_Registration에 적재합니다.
+    """
+    if not DANAWA_BRAND_CSV.exists():
+        print(f"❌ 브랜드 판매량 CSV 파일이 존재하지 않습니다: {DANAWA_BRAND_CSV}")
+        return
+
+    rows = read_csv_rows(DANAWA_BRAND_CSV)
+
+    cursor.execute(
+        """
+        SELECT year, month, brand_name, sales_count
+        FROM Monthly_Brand_Registration
+        """
+    )
+    existing_rows = set(cursor.fetchall())
+
+    inserted = 0
+    skipped_existing = 0
+
+    for row in rows:
+        brand_name = row.get("브랜드") or row.get("brand_name")
+        year_val = row.get("년") or row.get("year")
+        month_val = row.get("월") or row.get("month")
+        sales_val = row.get("판매량") or row.get("sales_count")
+
+        if not brand_name or not year_val or not month_val or not sales_val:
+            continue
+
+        year = to_int(year_val)
+        month = to_int(month_val)
+        sales_count = to_int(sales_val)
+
+        natural_row = (year, month, brand_name, sales_count)
+
+        if natural_row in existing_rows:
+            skipped_existing += 1
+            continue
+
+        # 💡 sales_id는 AUTO_INCREMENT이므로 쿼리에서 명시하지 않습니다.
+        cursor.execute(
+            """
+            INSERT INTO Monthly_Brand_Registration (year, month, brand_name, sales_count)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (year, month, brand_name, sales_count),
+        )
+
+        existing_rows.add(natural_row)
+        inserted += 1
+
+    print(
+        "[Monthly_Brand_Registration]",
+        f"inserted={inserted}",
+        f"skipped_existing={skipped_existing}",
+    )
+
+
 def insert_age_registrations(cursor, model_id_by_key, brand_id_by_name):
     """
-    nice_age_clean.csv에서 Car_Model과 모델명이 일치하는 '모델' 타입 데이터만 넣습니다.
-
-    Age_Registration.age_reg_id는 AUTO_INCREMENT이므로 직접 넣지 않습니다.
+    nice_age_clean.csv에서 데이터를 읽어 Age_Registration에 적재합니다.
     """
     rows = read_csv_rows(NICE_AGE_CSV)
 
@@ -386,9 +428,7 @@ def insert_age_registrations(cursor, model_id_by_key, brand_id_by_name):
 
 def insert_gender_registrations(cursor, model_id_by_key, brand_id_by_name):
     """
-    nice_gender_clean.csv에서 Car_Model과 모델명이 일치하는 '모델' 타입 데이터만 넣습니다.
-
-    Gender_Registration.gender_reg_id는 AUTO_INCREMENT가 아니므로 직접 번호를 부여합니다.
+    nice_gender_clean.csv에서 데이터를 읽어 Gender_Registration에 적재합니다.
     """
     rows = read_csv_rows(NICE_GENDER_CSV)
     next_gender_reg_id = get_next_id(
@@ -454,15 +494,13 @@ def insert_gender_registrations(cursor, model_id_by_key, brand_id_by_name):
         cursor.execute(
             """
             INSERT INTO Gender_Registration
-                (
-                    gender_reg_id,
-                    brand_id,
-                    model_id,
-                    gender,
-                    gubun,
-                    ranking,
-                    gender_reg_count
-                )
+            (gender_reg_id,
+             brand_id,
+             model_id,
+             gender,
+             gubun,
+             ranking,
+             gender_reg_count)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
@@ -498,9 +536,12 @@ def main():
         cursor = connection.cursor()
 
         brand_id_by_name = insert_brands(cursor)
-
         model_id_by_key = insert_car_models(cursor, brand_id_by_name)
-        insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name)
+
+        # [수정/추가 된 함수들]
+        insert_monthly_model_registrations(cursor, model_id_by_key, brand_id_by_name)
+        insert_monthly_brand_registrations(cursor)
+
         insert_age_registrations(cursor, model_id_by_key, brand_id_by_name)
         insert_gender_registrations(cursor, model_id_by_key, brand_id_by_name)
 
