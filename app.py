@@ -1,124 +1,103 @@
+import sys
+from pathlib import Path
 
+import plotly.express as px
 import streamlit as st
 
-st.set_page_config(
-    page_title="Domestic Car Sales",
-    layout="wide"
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+from database.query import (  # noqa: E402
+    get_brand_monthly_sales,
+    get_brand_total_sales,
+    get_summary_metrics,
+    get_top_models,
 )
 
-# -------------------------
-# CSS
-# -------------------------
-st.markdown("""
-<style>
 
-/* Sidebar */
-[data-testid="stSidebar"]{
-    background:#000000 !important;
-}
+st.set_page_config(
+    page_title="자동차 등록 통계 대시보드",
+    layout="wide",
+)
 
-/* 기본 페이지 목록 숨김 */
-[data-testid="stSidebarNav"]{
-    display:none !important;
-}
+st.title("자동차 등록 통계 대시보드")
+st.caption("현대, 기아, 테슬라 중심의 월별 판매량과 등록 통계를 확인합니다.")
 
-/* 글자 */
-[data-testid="stSidebar"] *{
-    color:white !important;
-}
+metrics = get_summary_metrics()
 
-/* 버튼 */
-div.stButton > button{
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("브랜드 수", f"{int(metrics.get('brand_count') or 0):,}")
+col2.metric("모델 수", f"{int(metrics.get('model_count') or 0):,}")
+col3.metric("전체 등록량", f"{int(metrics.get('total_registration') or 0):,}")
 
-    background:#000000 !important;
+min_year = metrics.get("min_year")
+max_year = metrics.get("max_year")
+period = "-" if min_year is None or max_year is None else f"{int(min_year)} - {int(max_year)}"
+col4.metric("분석 기간", period)
 
-    color:white !important;
+st.divider()
 
-    border:none !important;
+monthly_df = get_brand_monthly_sales()
+brand_df = get_brand_total_sales()
 
-    width:100%;
-
-    text-align:left;
-
-    padding:15px;
-
-    font-size:20px;
-}
-
-/* selectbox */
-div[data-baseweb="select"] > div{
-
-    background:#333333 !important;
-
-    border-radius:10px;
-
-    min-height:55px;
-}
-hr {
-        height: 3px !important;     /* 두께 조절 */
-        border: none !important;    /* 기존 테두리 제거 */
-        background: linear-gradient(90deg, 
-            #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3
-        ) !important;
-        margin: 1em 0 !important;
-}
-/* 사이드바의 최상단 여백을 강제로 0으로 설정 */
-[data-testid="stSidebarContent"] {
-    padding-top: 0rem !important;
-}
-
-/* 자동 네비게이션 영역의 높이를 0으로 만들어 레이아웃 밀림 방지 */
-[data-testid="stSidebarNav"] {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# -------------------------
-# Sidebar
-# -------------------------
-with st.sidebar:
-
-    st.markdown("## Dashboard Menu")
-
-    if st.button("Home"):
-        st.switch_page("app.py")
-
-
-    st.divider()
-
-    st.subheader("Brand")
-
-    brand = st.selectbox(
-        "",
-        [
-            "선택",
-            "연도별",
-            "월별",
-            "TOP10"
-        ],
-        label_visibility="collapsed"
+if monthly_df.empty:
+    st.warning("표시할 월별 등록 데이터가 없습니다. DB 또는 CSV 데이터를 먼저 확인해 주세요.")
+else:
+    monthly_df["period"] = (
+        monthly_df["year"].astype(str)
+        + "-"
+        + monthly_df["month"].astype(int).astype(str).str.zfill(2)
     )
 
-    if brand == "연도별":
-        st.switch_page("streanlit/pages/brand.py")
-    elif brand == "월별":
-        st.switch_page("streanlit/pages/brand.py")
-    elif brand == "TOP10":
-        st.switch_page("streanlit/pages/brand.py")
+    left, right = st.columns([2, 1])
 
+    with left:
+        st.subheader("월별 브랜드 등록 추이")
+        fig = px.line(
+            monthly_df,
+            x="period",
+            y="registration_count",
+            color="brand_name",
+            markers=True,
+            labels={
+                "period": "기간",
+                "registration_count": "등록량",
+                "brand_name": "브랜드",
+            },
+        )
+        fig.update_layout(legend_title_text="브랜드", hovermode="x unified")
+        st.plotly_chart(fig, use_container_width=True)
 
-# -------------------------
-# Main
-# -------------------------
+    with right:
+        st.subheader("브랜드별 누적 등록량")
+        fig = px.pie(
+            brand_df,
+            names="brand_name",
+            values="registration_count",
+            hole=0.45,
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
-st.title("🚗 대제목")
-st.subheader("소제목")
-st.write("환영합니다.")
-st.image("https://images.unsplash.com/photo-1503376780353-7e6692767b70", width=500)
-st.write("분석에 대한 간략한 설명이 들어가는 자리입니다.")
+st.subheader("전체 모델 TOP 10")
+top_models = get_top_models(limit=10)
 
+if top_models.empty:
+    st.info("표시할 모델 데이터가 없습니다.")
+else:
+    fig = px.bar(
+        top_models.sort_values("registration_count"),
+        x="registration_count",
+        y="model_name",
+        color="brand_name",
+        orientation="h",
+        labels={
+            "registration_count": "등록량",
+            "model_name": "모델",
+            "brand_name": "브랜드",
+        },
+    )
+    fig.update_layout(yaxis_title=None, legend_title_text="브랜드")
+    st.plotly_chart(fig, use_container_width=True)
+    st.dataframe(top_models, use_container_width=True, hide_index=True)
