@@ -7,9 +7,9 @@ import mysql.connector
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DANAWA_MODEL_CSV = BASE_DIR / "danawa_model_clean.csv"
-NICE_AGE_CSV = BASE_DIR / "nice_age_clean.csv"
-NICE_GENDER_CSV = BASE_DIR / "nice_gender_clean.csv"
+DANAWA_MODEL_CSV = BASE_DIR / "../data/processed/danawa_model_clean.csv"
+NICE_AGE_CSV = BASE_DIR / "../data/processed/nice_age_clean.csv"
+NICE_GENDER_CSV = BASE_DIR / "../data/processed/nice_gender_clean.csv"
 
 # 아래 3개 브랜드는 지정된 brand_id를 반드시 사용합니다.
 FIXED_BRAND_ID_BY_NAME = {

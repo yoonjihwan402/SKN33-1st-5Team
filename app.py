@@ -1,15 +1,10 @@
-import sys
+import runpy
 from pathlib import Path
 
 import plotly.express as px
 import streamlit as st
 
-
-ROOT_DIR = Path(__file__).resolve().parents[1]
-if str(ROOT_DIR) not in sys.path:
-    sys.path.append(str(ROOT_DIR))
-
-from database.query import (  # noqa: E402
+from database.query import (
     get_brand_monthly_sales,
     get_brand_total_sales,
     get_summary_metrics,
@@ -17,10 +12,24 @@ from database.query import (  # noqa: E402
 )
 
 
-st.set_page_config(
-    page_title="자동차 등록 통계 대시보드",
-    layout="wide",
+BASE_DIR = Path(__file__).resolve().parent
+PAGES_DIR = BASE_DIR / "streanlit" / "pages"
+
+st.set_page_config(page_title="자동차 등록 통계 대시보드", layout="wide")
+
+page = st.sidebar.radio(
+    "메뉴",
+    ["메인 대시보드", "브랜드 분석", "연령·성별 분석"],
 )
+
+if page == "브랜드 분석":
+    runpy.run_path(str(PAGES_DIR / "brand.py"), run_name="__main__")
+    st.stop()
+
+if page == "연령·성별 분석":
+    runpy.run_path(str(PAGES_DIR / "age_gender.py"), run_name="__main__")
+    st.stop()
+
 
 st.title("자동차 등록 통계 대시보드")
 st.caption("현대, 기아, 테슬라 중심의 월별 판매량과 등록 통계를 확인합니다.")
@@ -43,7 +52,7 @@ monthly_df = get_brand_monthly_sales()
 brand_df = get_brand_total_sales()
 
 if monthly_df.empty:
-    st.warning("표시할 월별 등록 데이터가 없습니다. DB 또는 CSV 데이터를 먼저 확인해 주세요.")
+    st.warning("표시할 월별 등록 데이터가 없습니다.")
 else:
     monthly_df["period"] = (
         monthly_df["year"].astype(str)

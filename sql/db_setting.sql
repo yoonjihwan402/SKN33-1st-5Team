@@ -1,4 +1,5 @@
 create database cardb;
+
 grant all privileges on cardb.* to skn_ai@'%';
 
 show grants for skn_ai@'%';

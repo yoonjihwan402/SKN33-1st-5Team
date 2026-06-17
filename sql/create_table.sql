@@ -1,6 +1,14 @@
 ## -- 테이블 생성 SQL
 -- 1. 브랜드 테이블 (Brand)
-CREATE database cardb;
+
+
+# SET FOREIGN_KEY_CHECKS=0;
+# TRUNCATE TABLE Gender_Registration;
+# TRUNCATE TABLE Age_Registration;
+# TRUNCATE TABLE Monthly_Registration;
+# TRUNCATE TABLE Car_Model;
+# TRUNCATE TABLE Brand;
+# SET FOREIGN_KEY_CHECKS=1;
 
 CREATE TABLE Brand (
     brand_id INT NOT NULL,

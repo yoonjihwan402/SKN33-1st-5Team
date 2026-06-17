@@ -1,148 +1,92 @@
 import sys
-import os
+from pathlib import Path
 
-sys.path.append(
-    os.path.dirname(
-        os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__))
-        )
-    )
-)
-
+import plotly.express as px
 import streamlit as st
-import matplotlib.pyplot as plt
-import pandas as pd
 
-from database.query import (
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+from database.query import (  # noqa: E402
     get_age_brand_rank,
-    get_gender_brand_rank
+    get_age_model_rank,
+    get_gender_brand_rank,
+    get_gender_model_rank,
 )
 
-# =====================================
-# 페이지 설정
-# =====================================
 
-st.set_page_config(
-    page_title="Age & Gender Analysis",
-    layout="wide"
-)
+st.title("연령·성별 분석")
+st.caption("연령대와 성별 기준으로 선호 브랜드 및 모델 순위를 확인합니다.")
 
-st.title("👨‍👩‍👧‍👦 Age & Gender Analysis")
+tab_age, tab_gender = st.tabs(["연령대", "성별"])
 
-# 한글 깨짐 방지
-plt.rcParams["font.family"] = "Malgun Gothic"
-plt.rcParams["axes.unicode_minus"] = False
 
-# =====================================
-# 탭 생성
-# =====================================
+def render_rank_section(title, brand_df, model_df):
+    st.subheader(title)
 
-tab1, tab2 = st.tabs(
-    [
-        "Age",
-        "Gender"
-    ]
-)
+    if brand_df.empty and model_df.empty:
+        st.info("표시할 순위 데이터가 없습니다.")
+        return
 
-# =========================================
-# AGE TAB
-# =====================================
+    left, right = st.columns(2)
 
-with tab1:
+    with left:
+        st.markdown("#### 브랜드 순위")
+        if brand_df.empty:
+            st.info("브랜드 순위 데이터가 없습니다.")
+        else:
+            fig = px.bar(
+                brand_df.sort_values("registration_count"),
+                x="registration_count",
+                y="brand_name",
+                color="brand_name",
+                orientation="h",
+                labels={
+                    "registration_count": "등록량",
+                    "brand_name": "브랜드",
+                },
+            )
+            fig.update_layout(showlegend=False, yaxis_title=None)
+            st.plotly_chart(fig, use_container_width=True)
+            st.dataframe(brand_df, use_container_width=True, hide_index=True)
 
-    st.header("연령별 브랜드 순위")
+    with right:
+        st.markdown("#### 모델 순위")
+        if model_df.empty:
+            st.info("모델 순위 데이터가 없습니다.")
+        else:
+            fig = px.bar(
+                model_df.sort_values("registration_count"),
+                x="registration_count",
+                y="model_name",
+                color="brand_name",
+                orientation="h",
+                labels={
+                    "registration_count": "등록량",
+                    "model_name": "모델",
+                    "brand_name": "브랜드",
+                },
+            )
+            fig.update_layout(yaxis_title=None, legend_title_text="브랜드")
+            st.plotly_chart(fig, use_container_width=True)
+            st.dataframe(model_df, use_container_width=True, hide_index=True)
 
-    selected_age = st.select_slider(
-        "연령 선택",
-        options=[
-            "20대",
-            "30대",
-            "40대",
-            "50대",
-            "60대",
-            "70대"
-        ]
+
+with tab_age:
+    age_group = st.selectbox(
+        "연령대 선택",
+        ["20대 이하", "30대", "40대", "50대", "60대", "70대 이상"],
     )
 
-    # DB 값 매핑
-    age_map = {
-        "20대": "~20대",
-        "30대": "30대",
-        "40대": "40대",
-        "50대": "50대",
-        "60대": "60대",
-        "70대": "70대~"
-    }
+    brand_df = get_age_brand_rank(age_group)
+    model_df = get_age_model_rank(age_group)
+    render_rank_section(f"{age_group} 등록 순위", brand_df, model_df)
 
-    df = get_age_brand_rank(
-        age_map[selected_age]
-    )
+with tab_gender:
+    gender = st.radio("성별 선택", ["남성", "여성"], horizontal=True)
 
-    st.dataframe(
-        df,
-        use_container_width=True
-    )
-
-    fig, ax = plt.subplots(figsize=(8, 5))
-
-    ax.bar(
-        df["브랜드명"],
-        df["등록대수"]
-    )
-
-    ax.set_title(
-        f"{selected_age} 브랜드 순위"
-    )
-
-    ax.set_xlabel("브랜드")
-
-    ax.set_ylabel("등록대수")
-
-    st.pyplot(fig)
-
-# =====================================
-# GENDER TAB
-# =====================================
-
-with tab2:
-
-    st.header("성별 브랜드 순위")
-
-    selected_gender = st.select_slider(
-        "성별 선택",
-        options=[
-            "남성",
-            "여성"
-        ]
-    )
-
-    df = get_gender_brand_rank(
-        selected_gender
-    )
-
-    df["등록대수"] = pd.to_numeric(
-        df["등록대수"],
-        errors="coerce"
-    )
-
-    st.dataframe(
-        df,
-        use_container_width=True
-    )
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-
-    st.write(df.dtypes)
-    st.dataframe(df)
-
-    ax.pie(
-        df["등록대수"],
-        labels=df["브랜드명"],
-        autopct="%1.1f%%"
-    )
-
-    ax.set_title(
-        f"{selected_gender} 브랜드 순위"
-    )
-
-    st.pyplot(fig)
+    brand_df = get_gender_brand_rank(gender)
+    model_df = get_gender_model_rank(gender)
+    render_rank_section(f"{gender} 등록 순위", brand_df, model_df)
