@@ -53,11 +53,3 @@ CREATE TABLE Gender_Registration (
     FOREIGN KEY (brand_id) REFERENCES Brand(brand_id),
     FOREIGN KEY (model_id) REFERENCES Car_Model(model_id)
 );
-
-SELECT a.age_group,
-       b.brand_name,
-       a.ranking,
-       a.age_reg_count
-FROM age_registration a
-JOIN brand b
-ON a.brand_id = b.brand_id;

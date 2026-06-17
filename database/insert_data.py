@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from database.db_connection import get_connection
+from db_connection import get_connection
 
 
 def insert_all_project_data():
@@ -34,7 +34,6 @@ def insert_all_project_data():
 
         print(f"   - Brand 완료 ({len(unique_brands)}개)")
 
-
         # --------------------------------------------------------
         # 2. Car_Model 적재
         # --------------------------------------------------------
@@ -66,7 +65,6 @@ def insert_all_project_data():
         # --------------------------------------------------------
         print("▶ 3. Age_Registration 테이블 적재 중...")
         age_df = pd.read_csv(age_path)
-
 
         if len(age_df) > 0 and (age_df.iloc[0]['카테고리'] == '연령대' or age_df.iloc[0]['카테고리'] == '카테고리'):
             age_df = age_df.drop(age_df.index[0]).reset_index(drop=True)
@@ -163,7 +161,6 @@ def insert_all_project_data():
         cursor.close()
         conn.close()
 
+
 if __name__ == "__main__":
     insert_all_project_data()
-
-
