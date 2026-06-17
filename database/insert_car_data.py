@@ -7,9 +7,9 @@ import mysql.connector
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DANAWA_MODEL_CSV = BASE_DIR / "danawa_model_clean.csv"
-NICE_AGE_CSV = BASE_DIR / "nice_age_clean.csv"
-NICE_GENDER_CSV = BASE_DIR / "nice_gender_clean.csv"
+DANAWA_MODEL_CSV = BASE_DIR / "../data/processed/danawa_model_clean.csv"
+NICE_AGE_CSV = BASE_DIR / "../data/processed/nice_age_clean.csv"
+NICE_GENDER_CSV = BASE_DIR / "../data/processed/nice_gender_clean.csv"
 
 # 아래 3개 브랜드는 지정된 brand_id를 반드시 사용합니다.
 FIXED_BRAND_ID_BY_NAME = {
@@ -240,15 +240,15 @@ def insert_car_models(cursor, brand_id_by_name):
 def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
     """
     danawa_model_clean.csv의 월별 판매량을 Monthly_Registration에 넣습니다.
-
-    CSV의 '순위'는 Monthly_Registration 테이블에 대응 컬럼이 없으므로 저장하지 않습니다.
+    (새로 추가한 brand_name 컬럼에 맞게 수정한 버전)
     """
     rows = read_csv_rows(DANAWA_MODEL_CSV)
     next_reg_id = get_next_id(cursor, "Monthly_Registration", "reg_id")
 
+    # 💡 1. 중복 데이터 체크용 SELECT문에 brand_name 추가
     cursor.execute(
         """
-        SELECT model_id, year, month, monthly_reg_count
+        SELECT model_id, year, month, monthly_reg_count, brand_name
         FROM Monthly_Registration
         """
     )
@@ -259,7 +259,7 @@ def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
     skipped_existing = 0
 
     for row in rows:
-        brand_name = row["브랜드"]
+        brand_name = row["브랜드"]  # 💡 CSV에서 '브랜드명'(예: 기아, 현대)을 추출합니다.
         brand_id = brand_id_by_name.get(brand_name)
 
         if brand_id is None:
@@ -276,19 +276,22 @@ def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
         year = to_int(row["년"])
         month = to_int(row["월"])
         monthly_reg_count = to_int(row["판매량"])
-        natural_row = (model_id, year, month, monthly_reg_count)
+
+        # 💡 2. 중복 체크 세트(existing_rows)와 형식을 맞추기 위해 brand_name 추가
+        natural_row = (model_id, year, month, monthly_reg_count, brand_name)
 
         if natural_row in existing_rows:
             skipped_existing += 1
             continue
 
+        # 💡 3. ★핵심★ INSERT문에 brand_name 컬럼과 파라미터(%s)를 추가로 매핑합니다.
         cursor.execute(
             """
             INSERT INTO Monthly_Registration
-                (reg_id, model_id, year, month, monthly_reg_count)
-            VALUES (%s, %s, %s, %s, %s)
+                (reg_id, model_id, brand_name, year, month, monthly_reg_count)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
-            (next_reg_id, model_id, year, month, monthly_reg_count),
+            (next_reg_id, model_id, brand_name, year, month, monthly_reg_count),
         )
 
         existing_rows.add(natural_row)

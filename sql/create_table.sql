@@ -21,6 +21,7 @@ CREATE TABLE Car_Model (
 CREATE TABLE Monthly_Registration (
     reg_id INT NOT NULL,
     model_id INT NOT NULL,
+    brand_name varchar(50) NOT NULL,
     year INT NOT NULL,
     month INT NOT NULL,
     monthly_reg_count INT NOT NULL,
