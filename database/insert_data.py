@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from database.db_connection import get_connection
+from db_connection import get_connection
 
 
 def insert_all_project_data():
@@ -47,15 +47,10 @@ def insert_all_project_data():
             if not brand or brand in ['브랜드', '이름', '브랜드명']:
                 continue
 
-            sql = "INSERT IGNORE INTO Brand (brand_id, brand_name) VALUES (%s,%s)"
-            cursor.execute(sql, (idx, brand))
-            brand_map[brand] = idx
-        print("   - Brand 완료")
-
-        # ==============================
-        # 2. Car_Model
-        # ==============================
-        print("▶ Car_Model 적재")
+        # --------------------------------------------------------
+        # 2. Car_Model 적재
+        # --------------------------------------------------------
+        print("▶ 2. Car_Model 테이블 적재 중...")
         model_df = pd.read_csv(model_path)
         model_df = model_df[~((model_df['모델'] == '모델') | (model_df['브랜드'] == '브랜드'))]
 
@@ -100,11 +95,8 @@ def insert_all_project_data():
             if not model_name or model_name == '-':
                 continue
 
-            # 헤더행 유입 방어 및 필수 데이터 검증
-            if gubun in ['구분', '타입', '종류'] or ranking in ['순위', '랭킹'] or not ranking:
-                continue
-
-            brand_id = brand_map.get(brand_name)
+        if len(age_df) > 0 and (age_df.iloc[0]['카테고리'] == '연령대' or age_df.iloc[0]['카테고리'] == '카테고리'):
+            age_df = age_df.drop(age_df.index[0]).reset_index(drop=True)
 
             # 💡 [최종 업그레이드] 한글/영어(Model/모델) 및 띄어쓰기 불일치 완벽 해결
             model_id = None
