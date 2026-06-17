@@ -3,6 +3,7 @@ import csv
 import os
 import mysql.connector
 
+
 # 💡 현재 파일의 위치를 기준으로 경로 설정
 BASE_DIR = Path(__file__).resolve().parent
 
