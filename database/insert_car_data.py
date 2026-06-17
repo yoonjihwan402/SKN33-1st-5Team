@@ -240,7 +240,8 @@ def insert_car_models(cursor, brand_id_by_name):
 def insert_monthly_registrations(cursor, model_id_by_key, brand_id_by_name):
     """
     danawa_model_clean.csv의 월별 판매량을 Monthly_Registration에 넣습니다.
-    (새로 추가한 brand_name 컬럼에 맞게 수정한 버전)
+
+    CSV의 '순위'는 Monthly_Registration 테이블에 대응 컬럼이 없으므로 저장하지 않습니다.
     """
     rows = read_csv_rows(DANAWA_MODEL_CSV)
     next_reg_id = get_next_id(cursor, "Monthly_Registration", "reg_id")
