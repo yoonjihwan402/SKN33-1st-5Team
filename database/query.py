@@ -338,6 +338,7 @@ def search_faq(keyword: str, brand_name: str = None, limit: int = 30):
             return cur.fetchall()
 
 
+
 def get_faq_columns_debug():
     """디버그용: FAQ 테이블 실제 컬럼 목록 반환"""
     with get_connection() as conn:
