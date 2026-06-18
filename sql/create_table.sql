@@ -1,7 +1,21 @@
-## -- 테이블 생성 SQL
--- 1. 브랜드 테이블 (Brand)
-CREATE database cardb;
+-- ==================
+-- 초기화
+-- ==================
+# SET FOREIGN_KEY_CHECKS = 0;
+#
+# -- 2. 기존에 존재하던 테이블들을 깨끗하게 날려버립니다.
+# DROP TABLE IF EXISTS FAQ;
+# DROP TABLE IF EXISTS Gender_Registration;
+# DROP TABLE IF EXISTS Age_Registration;
+# DROP TABLE IF EXISTS Monthly_Brand_Registration;
+# DROP TABLE IF EXISTS Monthly_Model_Registration;
+# DROP TABLE IF EXISTS Car_Model;
+# DROP TABLE IF EXISTS Brand;
+#
+# -- 3. 안전하게 삭제가 끝났으므로 외래키 체크를 다시 켭니다.
+# SET FOREIGN_KEY_CHECKS = 1;
 
+-- 1. 브랜드 테이블 (Brand)
 CREATE TABLE Brand (
     brand_id INT NOT NULL,
     brand_name VARCHAR(50) NOT NULL,
@@ -17,11 +31,11 @@ CREATE TABLE Car_Model (
     FOREIGN KEY (brand_id) REFERENCES Brand(brand_id)
 );
 
--- 3. 월별등록데이터 테이블 (Monthly_Registration)
-CREATE TABLE Monthly_Registration (
+-- 3. 월별/모델별 등록데이터 테이블 (Monthly_Model_Registration)
+CREATE TABLE Monthly_Model_Registration (
     reg_id INT NOT NULL,
     model_id INT NOT NULL,
-    brand_name varchar(50) NOT NULL,
+    brand_name VARCHAR(50) NOT NULL,
     year INT NOT NULL,
     month INT NOT NULL,
     monthly_reg_count INT NOT NULL,
@@ -29,51 +43,52 @@ CREATE TABLE Monthly_Registration (
     FOREIGN KEY (model_id) REFERENCES Car_Model(model_id)
 );
 
--- 4. 연령대별 통계 테이블 (Age_Registration)
--- ERD 예시 데이터 상 brand_id나 model_id에 NULL이 들어올 수 있으므로 NULL 허용으로 설정합니다.
+-- 4. 월별/브랜드별 등록데이터 테이블 (Monthly_Brand_Registration)
+CREATE TABLE Monthly_Brand_Registration (
+    sales_id INT NOT NULL AUTO_INCREMENT,
+    brand_id INT NOT NULL,
+    year INT NOT NULL,                      -- 년 (예: 2024)
+    month INT NOT NULL,                     -- 월 (예: 1)
+    sales_count INT NOT NULL,               -- 브랜드별 총 판매량 (예: 44683)
+    PRIMARY KEY (sales_id),
+    FOREIGN KEY (brand_id) REFERENCES Brand(brand_id)
+);
+
+-- 5. 연령대별 통계 테이블 (Age_Registration)
 CREATE TABLE Age_Registration (
-    age_reg_id INT NOT NULL AUTO_INCREMENT, -- 파이썬이 일일이 번호 계산 안 해도 되게 자동 증가 추가
-    brand_id INT NULL,                      -- 브랜드 통계일 땐 모델이 NULL이 되므로 NULL 허용 유지
-    model_id INT NULL,                      -- 모델 통계일 땐 브랜드가 NULL이 될 수 있으므로 NULL 허용 유지
-    age_group VARCHAR(20) NOT NULL,         -- '20대 이하' 글자가 안 터지게 20자로 안전하게 확장
-    gubun VARCHAR(20) NOT NULL,             -- 데이터의 '모델' / '브랜드' 글자를 저장할 칸 필수 추가!
-    ranking INT NOT NULL,                   -- 순위는 필수 값이므로 엄격하게 NOT NULL 유지
-    age_reg_count INT NOT NULL,             -- 등록대수도 필수 값이므로 엄격하게 NOT NULL 유지
+    age_reg_id INT NOT NULL AUTO_INCREMENT,
+    brand_id INT NULL,
+    model_id INT NULL,
+    age_group VARCHAR(20) NOT NULL,
+    gubun VARCHAR(20) NOT NULL,
+    ranking INT NOT NULL,
+    age_reg_count INT NOT NULL,
     PRIMARY KEY (age_reg_id),
     FOREIGN KEY (brand_id) REFERENCES Brand(brand_id),
     FOREIGN KEY (model_id) REFERENCES Car_Model(model_id)
 );
 
--- 5. 성별 통계 테이블 (Gender_Registration) - 최종 완성본
+-- 6. 성별 통계 테이블 (Gender_Registration)
 CREATE TABLE Gender_Registration (
-    gender_reg_id INT NOT NULL,             -- 기존 설계대로 INT 유지 (파이썬에서 직접 번호를 매겨서 넣는 구조)
-    brand_id INT NULL,                      -- 브랜드 전체 통계일 때는 모델이 없으므로 NULL 허용 유지
-    model_id INT NULL,                      -- 특정 모델 통계일 때는 브랜드가 NULL이 될 수 있으므로 NULL 허용 유지
-    gender VARCHAR(20) NOT NULL,            -- '남성', '여성' 데이터가 안전하게 들어가도록 확장
-    gubun VARCHAR(20) NOT NULL,             -- 올려주신 데이터의 '모델' / '브랜드' 타입을 저장할 컬럼 필수 추가!
-    ranking INT NOT NULL,                   -- 순위는 필수 값이므로 원래 설계대로 NOT NULL 엄격하게 유지
-    gender_reg_count INT NOT NULL,          -- 등록대수도 필수 값이므로 원래 설계대로 NOT NULL 엄격하게 유지
+    gender_reg_id INT NOT NULL,
+    brand_id INT NULL,
+    model_id INT NULL,
+    gender VARCHAR(20) NOT NULL,
+    gubun VARCHAR(20) NOT NULL,
+    ranking INT NOT NULL,
+    gender_reg_count INT NOT NULL,
     PRIMARY KEY (gender_reg_id),
     FOREIGN KEY (brand_id) REFERENCES Brand(brand_id),
     FOREIGN KEY (model_id) REFERENCES Car_Model(model_id)
 );
 
-SELECT a.age_group,
-       b.brand_name,
-       a.ranking,
-       a.age_reg_count
-FROM age_registration a
-JOIN brand b
-ON a.brand_id = b.brand_id;
-
--- 6. 크롤링 기반 FAQ 캐싱 테이블 (기존 파일 맨 밑에 이어서 추가)
+-- 7. 크롤링 기반 FAQ 캐싱 테이블
 CREATE TABLE FAQ (
     faq_id INT NOT NULL AUTO_INCREMENT,
-    keyword VARCHAR(50) NOT NULL,           -- 사용자가 검색한 키워드 (예: 환불, 배송)
-    question TEXT NOT NULL,                 -- 크롤링으로 긁어온 질문 내용
-    answer TEXT NOT NULL,                   -- 크롤링으로 긁어온 답변 내용
-    source_url VARCHAR(255) NULL,           -- 센스 추가: 출처를 남기기 위한 크롤링 원본 주소 URL
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 긁어온 시간
-    PRIMARY KEY (faq_id)
-
+    brand_id INT NULL,
+    category VARCHAR(50) NOT NULL,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    PRIMARY KEY (faq_id),
+    FOREIGN KEY (brand_id) REFERENCES Brand(brand_id)
 );
