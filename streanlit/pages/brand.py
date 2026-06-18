@@ -1,114 +1,267 @@
-import sys
-from pathlib import Path
-
-import plotly.express as px
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 
-
-ROOT_DIR = Path(__file__).resolve().parents[2]
-if str(ROOT_DIR) not in sys.path:
-    sys.path.append(str(ROOT_DIR))
-
-from database.query import (  # noqa: E402
-    get_brand_monthly_sales,
-    get_brand_total_sales,
-    get_top_models,
+# ---------------------------------
+# MUST BE FIRST
+# ---------------------------------
+st.set_page_config(
+    page_title="Brand Analysis",
+    layout="wide"
 )
 
+# ---------------------------------
+# Sidebar CSS
+# ---------------------------------
+st.markdown("""
+<style>
 
-st.title("브랜드 분석")
-st.caption("브랜드별 등록량 추이와 인기 모델을 비교합니다.")
+/* Sidebar */
+[data-testid="stSidebar"]{
+    background:#000000 !important;
+}
 
-brand_totals = get_brand_total_sales()
+/* Hide Streamlit page list (THIS FIXES IT) */
+[data-testid="stSidebarNav"]{
+    display:none !important;
+}
 
-if brand_totals.empty:
-    st.warning("표시할 브랜드 데이터가 없습니다.")
-    st.stop()
+/* Sidebar text */
+[data-testid="stSidebar"] *{
+    color:white !important;
+}
 
-brand_options = ["전체", *brand_totals["brand_name"].tolist()]
-selected_brand = st.selectbox("브랜드 선택", brand_options)
+/* Reset spacing */
+[data-testid="stSidebarContent"]{
+    padding-top:20px;python app.py
+}
 
-if selected_brand == "전체":
-    selected_totals = brand_totals
-else:
-    selected_totals = brand_totals[brand_totals["brand_name"] == selected_brand]
+/* Button */
+div.stButton > button{
 
-total_count = int(selected_totals["registration_count"].sum())
-rank_text = "-"
+    background:#000000 !important;
 
-if selected_brand != "전체":
-    ranked = brand_totals.reset_index(drop=True)
-    rank_text = int(ranked.index[ranked["brand_name"] == selected_brand][0]) + 1
+    color:white !important;
 
-col1, col2, col3 = st.columns(3)
-col1.metric("선택 브랜드", selected_brand)
-col2.metric("누적 등록량", f"{total_count:,}")
-col3.metric("전체 순위", rank_text)
+    border:none !important;
 
-st.divider()
+    width:100%;
+    
 
-monthly_df = get_brand_monthly_sales()
-if selected_brand != "전체":
-    monthly_df = monthly_df[monthly_df["brand_name"] == selected_brand]
+    padding:15px;
 
-monthly_df["period"] = (
-    monthly_df["year"].astype(str)
-    + "-"
-    + monthly_df["month"].astype(int).astype(str).str.zfill(2)
-)
+    text-align:left;
 
-left, right = st.columns([2, 1])
+    font-size:20px;
+}
 
-with left:
-    st.subheader("월별 등록 추이")
-    fig = px.line(
-        monthly_df,
-        x="period",
-        y="registration_count",
-        color="brand_name",
-        markers=True,
-        labels={
-            "period": "기간",
-            "registration_count": "등록량",
-            "brand_name": "브랜드",
-        },
+/* Divider */
+hr {
+        height: 3px !important;     /* 두께 조절 */
+        border: none !important;    /* 기존 테두리 제거 */
+        background: linear-gradient(90deg, 
+            #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3
+        ) !important;
+        margin: 1em 0 !important;
+}
+/* 사이드바의 최상단 여백을 강제로 0으로 설정 */
+[data-testid="stSidebarContent"] {
+    padding-top: 0rem !important;
+}
+
+/* 자동 네비게이션 영역의 높이를 0으로 만들어 레이아웃 밀림 방지 */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* Selectbox */
+div[data-baseweb="select"] > div{
+
+    background:#333333 !important;
+
+    border-radius:10px !important;
+
+    min-height:55px;
+
+    border:1px solid #555 !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# ---------------------------------
+# Sidebar
+# ---------------------------------
+
+with st.sidebar:
+
+    st.markdown(
+        "## Dashboard Menu"
     )
-    fig.update_layout(legend_title_text="브랜드", hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True)
 
-with right:
-    st.subheader("브랜드 비중")
-    fig = px.bar(
-        brand_totals,
-        x="brand_name",
-        y="registration_count",
-        color="brand_name",
-        labels={
-            "brand_name": "브랜드",
-            "registration_count": "등록량",
-        },
+    if st.button("Home"):
+        st.switch_page("app.py")
+
+    st.divider()
+
+    st.subheader("Brand")
+
+    selected = st.selectbox(
+        "",
+        [
+            "연도 별",
+            "월 별",
+            "TOP 10"
+        ],
+        label_visibility="collapsed"
     )
-    fig.update_layout(showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("인기 모델 TOP 10")
-models = get_top_models(limit=10, brand_name=selected_brand)
+# ---------------------------------
+# YEAR
+# ---------------------------------
 
-if models.empty:
-    st.info("표시할 모델 데이터가 없습니다.")
-else:
-    fig = px.bar(
-        models.sort_values("registration_count"),
-        x="registration_count",
-        y="model_name",
-        color="brand_name",
-        orientation="h",
-        labels={
-            "registration_count": "등록량",
-            "model_name": "모델",
-            "brand_name": "브랜드",
-        },
+
+if selected == "연도 별":
+
+    st.title("📈 Yearly Sales")
+
+    st.subheader("Brand Sales by Year")
+
+    st.write(
+        "Annual sales comparison."
     )
-    fig.update_layout(yaxis_title=None, legend_title_text="브랜드")
-    st.plotly_chart(fig, use_container_width=True)
-    st.dataframe(models, use_container_width=True, hide_index=True)
+
+    df = pd.DataFrame({
+        "Year":[2021,2022,2023,2024],
+        "Hyundai":[68,72,76,82],
+        "Kia":[55,59,63,66],
+        "Tesla":[10,13,18,24]
+    })
+
+    col1, col2 = st.columns([2,1])
+
+    with col1:
+        fig, ax = plt.subplots(figsize=(5, 3))
+        # 색상과 스타일을 명시적으로 지정
+        ax.plot(df["Year"], df["Hyundai"], color='#e63946', linewidth=1, label="Hyundai")
+        ax.plot(df["Year"], df["Kia"], color='#457b9d', linewidth=2, label="Kia")
+        ax.plot(df["Year"], df["Tesla"], color='#f1faee', linewidth=2, label="Tesla")
+
+        # 제목 및 축 이름 설정
+        ax.set_title("Annual Sales Analysis", fontsize=12)
+        ax.set_xlabel("Year", fontsize=10)
+        ax.set_ylabel("Sales Count", fontsize=10)
+
+        # 범례(Legend) 글자 크기 조절
+        ax.legend(fontsize=5)
+
+        # 눈금 크기 조절
+        ax.tick_params(labelsize=10)
+
+        st.pyplot(fig)
+        st.info("최근 4년간 연도별 판매량 추이입니다.")
+        st.dataframe(df, use_container_width=True)
+
+# ---------------------------------
+# MONTH
+# ---------------------------------
+elif selected == "월 별":
+
+    st.title("📊 Monthly Sales")
+
+    st.subheader(
+        "Monthly Trend"
+    )
+
+    df = pd.DataFrame({
+
+        "Month":[
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun"
+        ],
+
+        "Sales":[
+            12000,
+            13000,
+            14000,
+            15000,
+            18000,
+            20000
+        ]
+
+    })
+
+    col1, col2 = st.columns([2,1])
+
+    with col1:
+
+        fig, ax = plt.subplots(
+            figsize=(6,4)
+        )
+
+        ax.bar(
+            df["Month"],
+            df["Sales"]
+        )
+
+        st.pyplot(fig)
+
+        st.dataframe(
+            df,
+            use_container_width=True
+        )
+
+
+# ---------------------------------
+# TOP10
+# ---------------------------------
+elif selected == "TOP 10":
+
+    st.title("🏆 TOP 10 Sales")
+
+    st.subheader(
+        "Top Brand Ranking"
+    )
+
+    df = pd.DataFrame({
+
+        "Brand":[
+            "Hyundai",
+            "Kia",
+            "Tesla"
+        ],
+
+        "Sales":[
+            82000,
+            66000,
+            24000
+        ]
+
+    })
+
+    col1, col2 = st.columns([2,1])
+
+    with col1:
+
+        fig, ax = plt.subplots(
+            figsize=(6,4)
+        )
+
+        ax.barh(
+            df["Brand"],
+            df["Sales"]
+        )
+
+        st.pyplot(fig)
+
+        st.dataframe(
+            df,
+            use_container_width=True
+        )

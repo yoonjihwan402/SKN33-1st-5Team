@@ -6,5 +6,3 @@ pymysql
 requests
 beautifulsoup4
 selenium
-webdriver-manager
-undetected-chromedriver
