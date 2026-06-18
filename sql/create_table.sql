@@ -84,10 +84,10 @@ CREATE TABLE Gender_Registration (
 -- 7. 크롤링 기반 FAQ 캐싱 테이블
 CREATE TABLE FAQ (
     faq_id INT NOT NULL AUTO_INCREMENT,
-    keyword VARCHAR(50) NOT NULL,
+    brand_id INT NULL,
+    category VARCHAR(50) NOT NULL,
     question TEXT NOT NULL,
     answer TEXT NOT NULL,
-    source_url VARCHAR(255) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (faq_id)
+    PRIMARY KEY (faq_id),
+    FOREIGN KEY (brand_id) REFERENCES Brand(brand_id)
 );
