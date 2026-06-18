@@ -33,7 +33,7 @@ CREATE TABLE Car_Model (
 
 -- 3. 월별/모델별 등록데이터 테이블 (Monthly_Model_Registration)
 CREATE TABLE Monthly_Model_Registration (
-    reg_id INT NOT NULL,
+    reg_id INT NOT NULL AUTO_INCREMENT,
     model_id INT NOT NULL,
     brand_name VARCHAR(50) NOT NULL,
     year INT NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE Age_Registration (
 
 -- 6. 성별 통계 테이블 (Gender_Registration)
 CREATE TABLE Gender_Registration (
-    gender_reg_id INT NOT NULL,
+    gender_reg_id INT NOT NULL AUTO_INCREMENT,
     brand_id INT NULL,
     model_id INT NULL,
     gender VARCHAR(20) NOT NULL,
