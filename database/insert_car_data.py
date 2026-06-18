@@ -292,9 +292,10 @@ def insert_monthly_model_registrations(cursor, model_id_by_key, brand_id_by_name
     )
 
 
-def insert_monthly_brand_registrations(cursor):
+def insert_monthly_brand_registrations(cursor, brand_id_by_name):
     """
-    [신규] danawa_brand_clean.csv를 읽어 Monthly_Brand_Registration에 적재합니다.
+    [수정] danawa_brand_clean.csv를 읽어 Monthly_Brand_Registration에 적재합니다.
+    - 문자열 brand_name 대신 매핑된 brand_id(FK)를 저장하도록 수정했습니다.
     """
     if not DANAWA_BRAND_CSV.exists():
         print(f"❌ 브랜드 판매량 CSV 파일이 존재하지 않습니다: {DANAWA_BRAND_CSV}")
@@ -302,9 +303,10 @@ def insert_monthly_brand_registrations(cursor):
 
     rows = read_csv_rows(DANAWA_BRAND_CSV)
 
+    # 💡 조회 및 중복 체크 튜플도 brand_name 대신 brand_id 구조로 변경
     cursor.execute(
         """
-        SELECT year, month, brand_name, sales_count
+        SELECT year, month, brand_id, sales_count
         FROM Monthly_Brand_Registration
         """
     )
@@ -312,6 +314,7 @@ def insert_monthly_brand_registrations(cursor):
 
     inserted = 0
     skipped_existing = 0
+    skipped_unknown_brand = 0
 
     for row in rows:
         brand_name = row.get("브랜드") or row.get("brand_name")
@@ -322,25 +325,33 @@ def insert_monthly_brand_registrations(cursor):
         if not brand_name or not year_val or not month_val or not sales_val:
             continue
 
+        # 💡 [핵심] 텍스트 브랜드명(예: "기아")을 숫자인 brand_id(1)로 변환합니다.
+        brand_id = brand_id_by_name.get(brand_name)
+
+        # 만약 Brand 테이블에 없는 엉뚱한 브랜드명이 CSV에 들어있다면 데이터 오염 방지를 위해 스킵합니다.
+        if brand_id is None:
+            skipped_unknown_brand += 1
+            continue
+
         year = to_int(year_val)
         month = to_int(month_val)
         sales_count = to_int(sales_val)
 
-        natural_row = (year, month, brand_name, sales_count)
+        # 💡 brand_name 대신 brand_id가 포함된 튜플로 중복 체크
+        natural_row = (year, month, brand_id, sales_count)
 
         if natural_row in existing_rows:
             skipped_existing += 1
             continue
 
-        # 💡 sales_id는 AUTO_INCREMENT이므로 쿼리에서 명시하지 않습니다.
+        # 💡 파이참 빨간 줄을 없애준 대망의 쿼리! 구멍 4개에 (brand_id, year, month, sales_count) 4개를 정확히 매핑합니다.
         cursor.execute(
             """
-            INSERT INTO Monthly_Brand_Registration (year, month, brand_name, sales_count)
+            INSERT INTO Monthly_Brand_Registration (brand_id, year, month, sales_count)
             VALUES (%s, %s, %s, %s)
             """,
-            (year, month, brand_name, sales_count),
+            (brand_id, year, month, sales_count),
         )
-
         existing_rows.add(natural_row)
         inserted += 1
 
@@ -348,6 +359,7 @@ def insert_monthly_brand_registrations(cursor):
         "[Monthly_Brand_Registration]",
         f"inserted={inserted}",
         f"skipped_existing={skipped_existing}",
+        f"skipped_unknown_brand={skipped_unknown_brand}",
     )
 
 
@@ -538,9 +550,9 @@ def main():
         brand_id_by_name = insert_brands(cursor)
         model_id_by_key = insert_car_models(cursor, brand_id_by_name)
 
-        # [수정/추가 된 함수들]
+
         insert_monthly_model_registrations(cursor, model_id_by_key, brand_id_by_name)
-        insert_monthly_brand_registrations(cursor)
+        insert_monthly_brand_registrations(cursor, brand_id_by_name)
 
         insert_age_registrations(cursor, model_id_by_key, brand_id_by_name)
         insert_gender_registrations(cursor, model_id_by_key, brand_id_by_name)

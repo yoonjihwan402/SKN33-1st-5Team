@@ -46,11 +46,12 @@ CREATE TABLE Monthly_Model_Registration (
 -- 4. 월별/브랜드별 등록데이터 테이블 (Monthly_Brand_Registration)
 CREATE TABLE Monthly_Brand_Registration (
     sales_id INT NOT NULL AUTO_INCREMENT,
+    brand_id INT NOT NULL,
     year INT NOT NULL,                      -- 년 (예: 2024)
     month INT NOT NULL,                     -- 월 (예: 1)
-    brand_name VARCHAR(50) NOT NULL,        -- 브랜드명 (예: 기아, 현대, 테슬라)
     sales_count INT NOT NULL,               -- 브랜드별 총 판매량 (예: 44683)
-    PRIMARY KEY (sales_id)
+    PRIMARY KEY (sales_id),
+    FOREIGN KEY (brand_id) REFERENCES Brand(brand_id)
 );
 
 -- 5. 연령대별 통계 테이블 (Age_Registration)
