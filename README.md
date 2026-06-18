@@ -35,9 +35,9 @@
 | 구분 | 화면 | 설명 |
 | --- | --- | --- |
 | 메인 | `app.py` | 대시보드 소개 및 분석 메뉴 카드 |
-|  | `pages/brand_annual.py` | 연도별 브랜드 등록/판매량 비교 |
-| 브랜드 분석 | `pages/brand_monthly.py` | 브랜드와 모델을 선택해 월별 추이 확인 |
-|  | `pages/brand_top10.py` | 전체 또는 브랜드별 모델 TOP 10 확인 |
+| 연도별 분석 | `pages/brand_annual.py` | 연도별 브랜드 등록/판매량 비교 |
+| 월별 분석 | `pages/brand_monthly.py` | 브랜드와 모델을 선택해 월별 추이 확인 |
+| TOP 10 분석 | `pages/brand_top10.py` | 전체 또는 브랜드별 모델 TOP 10 확인 |
 | 성별 브랜드 분석 | `pages/gender_brand.py` | 남성/여성 기준 브랜드 순위 확인 |
 | 성별 차종 분석  | `pages/gender_model.py` | 남성/여성 기준 모델 순위 확인 |
 | 연령대별 브랜드 분석 | `pages/age_brand.py` | 연령대별 브랜드 순위 확인 |
