@@ -277,6 +277,7 @@ Streamlit pages/ 화면에서 시각화
 | `pages/` | Streamlit 멀티페이지 분석 화면 |
 | `sql/create_table.sql` | ERD 기준 물리 테이블 생성 SQL |
 
+
 ## 기대 효과
 
 - 국내 주요 자동차 브랜드의 판매/등록 추이를 한 화면에서 비교
