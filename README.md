@@ -4,7 +4,7 @@
 
 ## 시연 영상
 ### [Home] 
-https://github.com/yoonjihwan402/SKN33-1st-5Team/issues/31#issue-4700065295
+<img width="1280" height="720" alt="Image" src="https://github.com/user-attachments/assets/eac44f54-36da-4315-adc1-7276ceab16de" />
 
 ### [Monthly]
 <img width="1280" height="720" alt="Image" src="https://github.com/user-attachments/assets/ee546335-e2e2-40e8-915e-fd6160bac124" />
