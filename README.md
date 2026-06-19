@@ -71,8 +71,8 @@ Streamlit 개발
 - Database: MySQL
 - Data Processing: pandas, csv
 - Crawling: requests, BeautifulSoup, Selenium, undetected-chromedriver
-- Visualization: Plotly
-- DB Connector: PyMySQL, mysql-connector-python
+- Visualization: Plotly, Matplotlib
+- DB Connector: MySQL, mysql-connector-python
 
 ## 🗂 프로젝트 구조
 
@@ -82,33 +82,39 @@ SKN33-1st-5Team-main/
 ├── sidebar_utils.py
 ├── requirements.txt
 ├── README.md
+│
 ├── crawl_data/
 │   ├── crawlers.py
 │   ├── preprocessor.py
 │   └── run_crawler.py
+│
 ├── crawl_faq/
 │   ├── hyundai_faq.py
 │   ├── kia_faq.py
 │   ├── tesla_faq.py
 │   ├── faq_preprocessor.py
 │   └── run_faq_crawler.py
+│
 ├── data/
 │   └── processed/
 │       ├── danawa_brand_clean.csv
 │       ├── danawa_model_clean.csv
 │       ├── nice_age_clean.csv
 │       └── nice_gender_clean.csv
+│
 ├── faq_data/
 │   └── processed/
 │       ├── all_faq_clean.csv
 │       ├── hyundai_faq_clean.csv
 │       ├── kia_faq_clean.csv
 │       └── tesla_faq_clean.csv
+│
 ├── database/
 │   ├── db_connection.py
 │   ├── insert_car_data.py
 │   ├── insert_faq_data.py
 │   └── query.py
+│
 ├── pages/
 │   ├── brand_annual.py
 │   ├── brand_monthly.py
@@ -118,10 +124,15 @@ SKN33-1st-5Team-main/
 │   ├── age_brand.py
 │   ├── age_model.py
 │   └── faq.py
+│
 ├── sql/
 │   ├── db_setting.sql
 │   ├── create_table.sql
-│   └── sample_query.py
+│   ├── sample_query.py
+│   ├── _gender.sql
+│   ├── _registration_sql
+│   └── _brand.sql
+│
 └── docs/
     ├── logical_erd.png
     └── physical_erd.png
@@ -202,27 +213,6 @@ pip install mysql-connector-python
 
 MySQL에서 아래 SQL 파일을 순서대로 실행합니다.
 
-```sql
--- sql/db_setting.sql
-CREATE DATABASE cardb;
-GRANT ALL PRIVILEGES ON cardb.* TO skn_ai@'%';
-```
-
-그다음 테이블을 생성합니다.
-
-```bash
-mysql -u skn_ai -p cardb < sql/create_table.sql
-```
-
-기본 DB 접속 정보는 코드 기준으로 다음과 같습니다.
-
-| 항목 | 값 |
-| --- | --- |
-| host | `localhost` |
-| port | `3306` |
-| user | `skn_ai` |
-| password | `1234` |
-| database | `cardb` |
 
 ### 4. CSV 데이터 적재
 
@@ -244,7 +234,7 @@ python database/insert_faq_data.py
 streamlit run app.py
 ```
 
-실행 후 브라우저에서 `http://localhost:8501`로 접속합니다.
+실행 후 브라우저에서 접속합니다.
 
 ## 데이터 처리 흐름
 
@@ -284,3 +274,5 @@ Streamlit pages/ 화면에서 시각화
 - 브랜드, 모델, 성별, 연령대 기준의 선호도 분석 가능
 - 크롤링, 전처리, DB 설계, 데이터 적재, 대시보드 구현까지 end-to-end 데이터 파이프라인 경험
 - Streamlit 기반 데이터 서비스 구현 및 팀 협업 경험 축적
+
+## 회고 
