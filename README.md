@@ -19,7 +19,7 @@
 </div>
 
 ---
-## 목차
+## 🧭 목차
 
 | 구분 | 바로가기 |
 | --- | --- |
@@ -30,8 +30,8 @@
 | 🚀 실행/정리 | [실행 방법](#실행-방법) · [데이터 처리 흐름](#데이터-처리-흐름) · [주요 모듈 설명](#주요-모듈-설명) · [기대 효과](#기대-효과) |
 | 🧾 회고 |  [회고](#회고) |
 
-## 대표 시연 영상
-Streamlit 페이지 대표 시연 영상입니다.
+## 🎬 대표 시연 영상
+> 실제 구현된 Streamlit 화면 흐름입니다.
 
 ### [Home] 
 <img width="1280" height="720" alt="Image" src="https://github.com/user-attachments/assets/eac44f54-36da-4315-adc1-7276ceab16de" />
@@ -67,7 +67,9 @@ Streamlit 페이지 대표 시연 영상입니다.
 | Day 2 오전 | MySQL 구축, 데이터 적재, Streamlit 화면 개발 |
 | Day 2 오후 | 분석 화면 통합, FAQ 구현, 오류 수정, README/발표 자료 정리 |
 
-## 주요 기능
+## ✨ 주요 기능
+
+> 사용자는 사이드바와 메인 카드 버튼을 통해 원하는 분석 화면으로 이동할 수 있습니다.
 
 | 구분 | 화면 | 설명 |
 | --- | --- | --- |
@@ -81,7 +83,7 @@ Streamlit 페이지 대표 시연 영상입니다.
 | 연령대별 차종 분석 | `pages/age_model.py` | 연령대별 모델 순위 확인 |
 | FAQ | `pages/faq.py` | 브랜드별 FAQ 키워드 검색 |
 
-## 개발 진행 순서
+## 🔄 개발 진행 순서
 
 ```text
 주제 선정 및 역할 분담
@@ -101,7 +103,7 @@ Streamlit 개발
 발표 준비
 ```
 
-## 기술 스택
+## 🛠 기술 스택
 
 - Language: Python, SQL
 - App: Streamlit
@@ -185,7 +187,7 @@ SKN33-1st-5Team-main/
 | `data/processed/nice_gender_clean.csv` | NICE 성별 브랜드/모델 등록 순위 | 구분, 타입, 순위, 브랜드명, 모델명, 등록량 |
 | `faq_data/processed/all_faq_clean.csv` | 현대/기아/테슬라 FAQ 통합 데이터 | 브랜드, 대분류, 카테고리, 질문, 답변 |
 
-## ERD
+## 🧩 ERD
 
 ### 논리 ERD
 
@@ -195,7 +197,7 @@ SKN33-1st-5Team-main/
 
 <img width="2320" height="1322" alt="Image" src="https://github.com/user-attachments/assets/898deb40-6e7f-4c37-a0c9-debe30fee816" />
 
-## 데이터베이스 설계
+## 🗄 데이터베이스 설계
 
 현재 DB 스키마는 `sql/create_table.sql` 기준이며, 핵심 엔티티는 브랜드, 모델, 월별 등록/판매 데이터, 성별/연령대 통계, FAQ입니다.
 
@@ -217,7 +219,7 @@ SKN33-1st-5Team-main/
 - `Brand` 1:N `Age_Registration`, `Gender_Registration`, `FAQ`
 - `Car_Model` 1:N `Age_Registration`, `Gender_Registration`
 
-## 실행 방법
+## 🚀 실행 방법
 
 ### 1. 가상환경 생성
 
@@ -273,7 +275,7 @@ streamlit run app.py
 
 실행 후 브라우저에서 접속합니다.
 
-## 데이터 처리 흐름
+## 🔁 데이터 처리 흐름
 
 ```text
 다나와/NICE/브랜드 FAQ 데이터 수집
@@ -291,7 +293,7 @@ database/query.py에서 화면별 조회 쿼리 제공
 Streamlit pages/ 화면에서 시각화
 ```
 
-## 주요 모듈 설명
+## 📦 주요 모듈 설명
 
 | 경로 | 역할 |
 | --- | --- |
@@ -305,14 +307,14 @@ Streamlit pages/ 화면에서 시각화
 | `sql/create_table.sql` | ERD 기준 물리 테이블 생성 SQL |
 
 
-## 기대 효과
+## 📈 기대 효과
 
 - 국내 주요 자동차 브랜드의 판매/등록 추이를 한 화면에서 비교
 - 브랜드, 모델, 성별, 연령대 기준의 선호도 분석 가능
 - 크롤링, 전처리, DB 설계, 데이터 적재, 대시보드 구현까지 end-to-end 데이터 파이프라인 경험
 - Streamlit 기반 데이터 서비스 구현 및 팀 협업 경험 축적
 
-## 회고 
+## 💭 회고 
 | 팀원 | 회고 |
 | ---- | --- |
 |윤&#8288;지&#8288;환| PM으로써 branch 기준, git 기준을 모호하게 시작하니 진행 간 환경이 달라지는 어려움이 있다는 것을 이번 프로젝트에서 알게되었습니다. 전반적인 프로젝트 진행을 알 수 있어 큰 배움이 되었고, 데이터 설계, 스트림릿과의 연동에 대해서 한 층 더 알 수 있는 시간이 되었던 것 같습니다. |
