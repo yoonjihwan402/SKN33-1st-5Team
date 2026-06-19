@@ -4,26 +4,7 @@
 
 ## 목차
 
-- [대표 시연 영상]
-  - [Home](#demo-home)
-  - [Monthly](#demo-monthly)
-- [프로젝트 개요](#project-overview)
-- [협업 및 역할](#collaboration-roles)
-- [프로젝트 일정](#project-schedule)
-- [주요 기능](#features)
-- [개발 진행 순서](#development-process)
-- [기술 스택](#tech-stack)
-- [프로젝트 구조](#project-structure)
-- [데이터 출처 및 전처리 파일](#data-sources)
-- [ERD](#erd)
-- [데이터베이스 설계](#database-design)
-- [실행 방법](#how-to-run)
-- [데이터 처리 흐름](#data-flow)
-- [주요 모듈 설명](#modules)
-- [기대 효과](#expected-effects)
-- [회고](#retrospective)
-
-## 대표 시연 영상 (#demo-video)
+## 대표 시연 영상
 Streamlit 페이지 대표 시연 영상입니다.
 
 ### [Home] 
