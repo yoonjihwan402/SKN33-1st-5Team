@@ -4,7 +4,7 @@
 
 ## 목차
 
-- [대표 시연 영상](#demo-video)
+- [대표 시연 영상]
   - [Home](#demo-home)
   - [Monthly](#demo-monthly)
 - [프로젝트 개요](#project-overview)
@@ -23,7 +23,7 @@
 - [기대 효과](#expected-effects)
 - [회고](#retrospective)
 
-## 대표 시연 영상
+## 대표 시연 영상 (#demo-video)
 Streamlit 페이지 대표 시연 영상입니다.
 
 ### [Home] 
