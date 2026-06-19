@@ -2,6 +2,23 @@
 
 현대, 기아, 테슬라의 자동차 판매/등록 데이터를 수집하고 MySQL에 적재한 뒤, Streamlit으로 브랜드별, 성별, 연령대별 통계를 시각화하는 프로젝트입니다. 다나와 자동차의 월별 판매 데이터, NICE 블루마크 기반 성별/연령대 등록 통계, 브랜드별 FAQ 데이터를 함께 활용합니다.
 
+<br/>
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white)
+
+<br/>
+
+![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-4B8BBE?style=flat-square)
+![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=flat-square&logo=selenium&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)
+
+</div>
+
+---
 ## 목차
 
 | 구분 | 바로가기 |
