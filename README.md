@@ -4,7 +4,7 @@
 
 ## 시연 영상
 ### [Home] 
-https://github.com/yoonjihwan402/SKN33-1st-5Team/issues/30#issue-4699964916
+https://github.com/yoonjihwan402/SKN33-1st-5Team/issues/31#issue-4700065295
 
 ### [Monthly]
 https://github.com/yoonjihwan402/SKN33-1st-5Team/issues/29#issue-4699946671
