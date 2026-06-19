@@ -156,7 +156,7 @@ SKN33-1st-5Team-main/
 
 ### 물리 ERD
 
-<img width="2320" height="854" alt="Image" src="https://github.com/user-attachments/assets/5095e5de-a71e-403e-bb64-a4e337a3e0af" />
+<img width="2320" height="1322" alt="Image" src="https://github.com/user-attachments/assets/898deb40-6e7f-4c37-a0c9-debe30fee816" />
 
 ## 데이터베이스 설계
 
