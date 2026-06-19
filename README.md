@@ -2,7 +2,30 @@
 
 현대, 기아, 테슬라의 자동차 판매/등록 데이터를 수집하고 MySQL에 적재한 뒤, Streamlit으로 브랜드별, 성별, 연령대별 통계를 시각화하는 프로젝트입니다. 다나와 자동차의 월별 판매 데이터, NICE 블루마크 기반 성별/연령대 등록 통계, 브랜드별 FAQ 데이터를 함께 활용합니다.
 
+## 목차
+
+- [대표 시연 영상](#demo-video)
+  - [Home](#demo-home)
+  - [Monthly](#demo-monthly)
+- [프로젝트 개요](#project-overview)
+- [협업 및 역할](#collaboration-roles)
+- [프로젝트 일정](#project-schedule)
+- [주요 기능](#features)
+- [개발 진행 순서](#development-process)
+- [기술 스택](#tech-stack)
+- [프로젝트 구조](#project-structure)
+- [데이터 출처 및 전처리 파일](#data-sources)
+- [ERD](#erd)
+- [데이터베이스 설계](#database-design)
+- [실행 방법](#how-to-run)
+- [데이터 처리 흐름](#data-flow)
+- [주요 모듈 설명](#modules)
+- [기대 효과](#expected-effects)
+- [회고](#retrospective)
+
 ## 대표 시연 영상
+Streamlit 페이지 대표 시연 영상입니다.
+
 ### [Home] 
 <img width="1280" height="720" alt="Image" src="https://github.com/user-attachments/assets/eac44f54-36da-4315-adc1-7276ceab16de" />
 
