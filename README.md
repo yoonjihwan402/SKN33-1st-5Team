@@ -1,6 +1,11 @@
-# 🚗 AutoStats - 국내 자동차 판매/등록 분석 대시보드
+<div align="center">
 
-현대, 기아, 테슬라의 자동차 판매/등록 데이터를 수집하고 MySQL에 적재한 뒤, Streamlit으로 브랜드별, 성별, 연령대별 통계를 시각화하는 프로젝트입니다. 다나와 자동차의 월별 판매 데이터, NICE 블루마크 기반 성별/연령대 등록 통계, 브랜드별 FAQ 데이터를 함께 활용합니다.
+# 🚗 AutoStats
+
+### 국내 자동차 판매/등록 분석 대시보드
+
+현대 · 기아 · 테슬라의 자동차 판매/등록 데이터를 수집하고,  
+MySQL과 Streamlit을 통해 브랜드·성별·연령대별 인사이트를 시각화한 프로젝트입니다.
 
 <br/>
 
@@ -19,6 +24,7 @@
 </div>
 
 ---
+
 ## 🧭 목차
 
 | 구분 | 바로가기 |
@@ -27,10 +33,11 @@
 | 📌 프로젝트 | [프로젝트 개요](#-프로젝트-개요) · [협업 및 역할](#-협업-및-역할) · [프로젝트 일정](#-프로젝트-일정) |
 | 🧩 기능/구조 | [주요 기능](#주요-기능) · [개발 진행 순서](#개발-진행-순서) · [기술 스택](#기술-스택) · [프로젝트 구조](#-프로젝트-구조) |
 | 📊 데이터/DB | [데이터 출처 및 전처리 파일](#-데이터-출처-및-전처리-파일) · [ERD](#erd) · [데이터베이스 설계](#데이터베이스-설계) |
-| 🚀 실행/정리 | [실행 방법](#실행-방법) · [데이터 처리 흐름](#데이터-처리-흐름) · [주요 모듈 설명](#주요-모듈-설명) · [기대 효과](#기대-효과) |
-| 🧾 회고 |  [회고](#회고) |
+| 🚀 실행 | [실행 방법](#실행-방법) |
+| 🧾 정리 | [데이터 처리 흐름](#데이터-처리-흐름) · [주요 모듈 설명](#주요-모듈-설명) · [기대 효과](#기대-효과) · [회고](#회고) |
 
 ## 🎬 대표 시연 영상
+
 > 실제 구현된 Streamlit 화면 흐름입니다.
 
 ### [Home] 
@@ -41,11 +48,15 @@
 
 ## 📌 프로젝트 개요
 
-- 분석 대상: 현대, 기아, 테슬라
-- 주요 데이터: 월별 브랜드/모델 판매량, 성별 등록 순위, 연령대별 등록 순위, FAQ
-- 저장소 구성: 크롤링, 전처리 CSV, DB 생성/적재, Streamlit 대시보드
-- 실행 앱: `app.py`
-- 주요 화면: 브랜드 연도별/월별/TOP10, 성별 브랜드/모델 순위, 연령대별 브랜드/모델 순위, FAQ 검색
+| 항목 | 내용 |
+| --- | --- |
+| 🎯 분석 대상 | 현대, 기아, 테슬라 |
+| 📊 주요 데이터 | 월별 브랜드/모델 판매량, 성별 등록 순위, 연령대별 등록 순위, FAQ |
+| 🧱 프로젝트 구성 | 크롤링, 전처리 CSV, DB 생성/적재, Streamlit 대시보드 |
+| 🚀 실행 앱 | `app.py` |
+| 🖥 주요 화면 | 브랜드 연도별/월별/TOP10, 성별 브랜드/모델 순위, 연령대별 브랜드/모델 순위, FAQ 검색 |
+
+> 자동차 데이터를 수집하는 단계부터 DB 적재, Streamlit 시각화까지 하나의 흐름으로 연결한 end-to-end 데이터 분석 프로젝트입니다.
 
 ## 👥 협업 및 역할
 
@@ -105,13 +116,15 @@ Streamlit 개발
 
 ## 🛠 기술 스택
 
-- Language: Python, SQL
-- App: Streamlit
-- Database: MySQL
-- Data Processing: pandas, csv
-- Crawling: requests, BeautifulSoup, Selenium, undetected-chromedriver
-- Visualization: Plotly, Matplotlib
-- DB Connector: MySQL, mysql-connector-python
+| 분류 | 기술 |
+| --- | --- |
+| Language | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![SQL](https://img.shields.io/badge/SQL-003B57?style=flat-square) |
+| Web App | ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white) |
+| Database | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) |
+| Data Processing | ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white) ![CSV](https://img.shields.io/badge/CSV-4B5563?style=flat-square) |
+| Crawling | ![Requests](https://img.shields.io/badge/Requests-222222?style=flat-square) ![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-4B8BBE?style=flat-square) ![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=flat-square&logo=selenium&logoColor=white) |
+| Visualization | ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=flat-square&logo=plotly&logoColor=white) ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat-square) |
+| DB Connector | ![mysql--connector](https://img.shields.io/badge/mysql--connector--python-4479A1?style=flat-square) |
 
 ## 🗂 프로젝트 구조
 
@@ -317,8 +330,8 @@ Streamlit pages/ 화면에서 시각화
 ## 💭 회고 
 | 팀원 | 회고 |
 | ---- | --- |
-|윤&#8288;지&#8288;환| PM으로써 branch 기준, git 기준을 모호하게 시작하니 진행 간 환경이 달라지는 어려움이 있다는 것을 이번 프로젝트에서 알게되었습니다. 전반적인 프로젝트 진행을 알 수 있어 큰 배움이 되었고, 데이터 설계, 스트림릿과의 연동에 대해서 한 층 더 알 수 있는 시간이 되었던 것 같습니다. |
-|</nobr>김혜진</nobr>| 전공자는 있지만 경력자가 없어서 어려움을 겪었지만 팀 내 분위기가 좋아 힘내서 결국 완성할 수 있었습니다. 사실 코딩은 AI가 워낙 잘 되어있어서 시간이 그리 오래 걸리지 않았습니다. 초기 설계를 더욱 탄탄하게 했다면 순항할 수 있었을 텐데 그 점이 아쉽습니다. 그리고 어떤 부분에서 얼마나 부족한지 알게되었고, 추후 스스로 공부하고 회고할 수 있는 좋은 자료가 될 것 같습니다. |
-|</nobr>이양원</nobr>| 웹 크롤링으로 수집한 원시 데이터를 SQL로 구조화하여 적재하고, 이를 Streamlit으로 시각화하는 프로젝트를 진행했습니다. 데이터를 추출하고 가공하여 사용자에게 보여지기까지의 전체 흐름을 직접 통제해 보면서, 단순한 구현을 넘어 시스템 전체를 조망하는 엔지니어로서의 시야를 한층 넓힐 수 있었던 뜻깊은 경험이었습니다. |
-|</nobr>주상현</nobr> | 처음으로 팀 프로젝트에서 데이터베이스 설계를 담당하면서, 초기 설계의 완성도가 전체 프로젝트의 완성도를 좌우한다는 것을 직접 체감했습니다. 수정이 필요한 상황에서도 팀원들의 작업에 영향을 최소화하기 위해 설계 범위를 조율하며 협업의 중요성도 배울 수 있었습니다. 다음 프로젝트에서는 데이터 구조와 요구사항을 충분히 분석한 뒤 설계를 확정하는 습관을 반드시 가져가겠습니다. |
-|</nobr>허유나</nobr>| 생소한 데이터 전처리와 지속적인 DB 적재 에러로 시행착오를 겪었지만, 끈기 있게 트러블슈팅하며 RDB 구조의 원리와 데이터 무결성의 중요성을 체득한 값진 경험이었습니다. |
+| 윤&#8288;지&#8288;환 | PM으로써 branch 기준, git 기준을 모호하게 시작하니 진행 간 환경이 달라지는 어려움이 있다는 것을 이번 프로젝트에서 알게되었습니다. 전반적인 프로젝트 진행을 알 수 있어 큰 배움이 되었고, 데이터 설계, 스트림릿과의 연동에 대해서 한 층 더 알 수 있는 시간이 되었던 것 같습니다. |
+| 김&#8288;혜&#8288;진 | 전공자는 있지만 경력자가 없어서 어려움을 겪었지만 팀 내 분위기가 좋아 힘내서 결국 완성할 수 있었습니다. 사실 코딩은 AI가 워낙 잘 되어있어서 시간이 그리 오래 걸리지 않았습니다. 초기 설계를 더욱 탄탄하게 했다면 순항할 수 있었을 텐데 그 점이 아쉽습니다. 그리고 어떤 부분에서 얼마나 부족한지 알게되었고, 추후 스스로 공부하고 회고할 수 있는 좋은 자료가 될 것 같습니다. |
+| 이&#8288;양&#8288;원 | 웹 크롤링으로 수집한 원시 데이터를 SQL로 구조화하여 적재하고, 이를 Streamlit으로 시각화하는 프로젝트를 진행했습니다. 데이터를 추출하고 가공하여 사용자에게 보여지기까지의 전체 흐름을 직접 통제해 보면서, 단순한 구현을 넘어 시스템 전체를 조망하는 엔지니어로서의 시야를 한층 넓힐 수 있었던 뜻깊은 경험이었습니다. |
+| 주&#8288;상&#8288;현 | 처음으로 팀 프로젝트에서 데이터베이스 설계를 담당하면서, 초기 설계의 완성도가 전체 프로젝트의 완성도를 좌우한다는 것을 직접 체감했습니다. 수정이 필요한 상황에서도 팀원들의 작업에 영향을 최소화하기 위해 설계 범위를 조율하며 협업의 중요성도 배울 수 있었습니다. 다음 프로젝트에서는 데이터 구조와 요구사항을 충분히 분석한 뒤 설계를 확정하는 습관을 반드시 가져가겠습니다. |
+| 허&#8288;유&#8288;나 | 생소한 데이터 전처리와 지속적인 DB 적재 에러로 시행착오를 겪었지만, 끈기 있게 트러블슈팅하며 RDB 구조의 원리와 데이터 무결성의 중요성을 체득한 값진 경험이었습니다. |
