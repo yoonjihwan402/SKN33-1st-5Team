@@ -7,7 +7,7 @@
 https://github.com/yoonjihwan402/SKN33-1st-5Team/issues/31#issue-4700065295
 
 ### [Monthly]
-https://github.com/yoonjihwan402/SKN33-1st-5Team/issues/29#issue-4699946671
+<img width="1280" height="720" alt="Image" src="https://github.com/user-attachments/assets/ee546335-e2e2-40e8-915e-fd6160bac124" />
 
 ## 📌 프로젝트 개요
 
